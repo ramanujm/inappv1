@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 @Component
-@Order(-1000)
+@Order(-1)
 public class CORSFilter extends OncePerRequestFilter {
 
 	@Override
@@ -31,10 +31,12 @@ public class CORSFilter extends OncePerRequestFilter {
 			response.setHeader("Access-Control-Max-Age", "3600");
 	        response.setHeader("Access-Control-Allow-Headers", "X-Requested-With, Content-Type, Authorization, Origin, Accept, Access-Control-Request-Method, Access-Control-Request-Headers");
 
-	        chain.doFilter(request, response);
-
-		
-	}
+	        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+	            response.setStatus(HttpServletResponse.SC_OK);
+	        } else {
+	            chain.doFilter(request, response);
+	        }
+	 }
 	
 
 	//public void init(FilterConfig filterConfig) {}

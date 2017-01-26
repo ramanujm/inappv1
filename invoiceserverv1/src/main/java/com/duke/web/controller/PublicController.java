@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
 
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,7 +34,6 @@ public class PublicController {
 	@Autowired
 	InvoiceService invoiceService;	
 	
-    @CrossOrigin(origins = "*")
 	@RequestMapping(method = RequestMethod.POST,value="/register")
 	public @ResponseBody Response doRegister(@RequestBody RegisterVO registerRq) {  
     	Response response = new Response();
@@ -60,7 +58,6 @@ public class PublicController {
 	}
     
 
-    @CrossOrigin(origins = "*")
 	@RequestMapping(method = RequestMethod.POST,value="/login")
 	public @ResponseBody Response doAuthentication(String email, String password) {  
     	Response response = new Response();
@@ -89,7 +86,6 @@ public class PublicController {
 	   return response;
 	}
     
-    @CrossOrigin(origins = "*")
    	@RequestMapping(method = RequestMethod.GET,value="/allCountries")
    	public @ResponseBody Response getAllCountries() {  
        	Response response = new Response();
@@ -110,7 +106,6 @@ public class PublicController {
    	}
     
     
-    @CrossOrigin(origins = "*")
    	@RequestMapping(method = RequestMethod.GET,value="/allIndustries")
    	public @ResponseBody Response getAllIndustries() {  
        	Response response = new Response();

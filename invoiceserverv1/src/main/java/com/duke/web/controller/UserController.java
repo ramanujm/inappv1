@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
 
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,7 +40,6 @@ public class UserController {
 	@Autowired
 	InvoiceService invoiceService;
 	
-    @CrossOrigin(origins = "*")
 	@RequestMapping(method = RequestMethod.GET,value="/mydetails")
 	public @ResponseBody Response getMyDetails(Principal principal) {  
     	Response response = new Response();
@@ -67,7 +65,6 @@ public class UserController {
 	}
     
     
-    @CrossOrigin(origins = "*")
    	@RequestMapping(method = RequestMethod.POST,value="/mydetails")
    	public @ResponseBody Response updatePersonalDetail(Principal princial,@RequestBody PersonalInfoVO personalInfo) {  
        	Response response = new Response();
@@ -92,7 +89,6 @@ public class UserController {
    	}
        
 
-    @CrossOrigin(origins = "*")
 	@RequestMapping(method = RequestMethod.POST,value="/login")
 	public @ResponseBody Response doAuthentication(String email, String password) {  
     	Response response = new Response();
@@ -121,7 +117,6 @@ public class UserController {
 	   return response;
 	}
     
-    @CrossOrigin(origins = "*")
    	@RequestMapping(method = RequestMethod.GET,value="/allCountries")
    	public @ResponseBody Response getAllCountries() {  
        	Response response = new Response();
@@ -142,7 +137,6 @@ public class UserController {
    	}
     
     
-    @CrossOrigin(origins = "*")
    	@RequestMapping(method = RequestMethod.GET,value="/allIndustries")
    	public @ResponseBody Response getAllIndustries() {  
        	Response response = new Response();

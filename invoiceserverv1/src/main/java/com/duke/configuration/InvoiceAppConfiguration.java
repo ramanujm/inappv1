@@ -2,6 +2,7 @@ package com.duke.configuration;
 
 import java.util.Properties;
 
+import javax.servlet.FilterRegistration;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -15,8 +16,8 @@ import org.springframework.orm.hibernate4.LocalSessionFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
+
 @Configuration
-@EnableWebMvc
 @EnableTransactionManagement
 @ComponentScan(basePackages = "com.duke")
 @PropertySource("classpath:application.properties")
@@ -76,6 +77,15 @@ public class InvoiceAppConfiguration {
 	    transactionManager.setSessionFactory(sessionFactory().getObject());
 	    return transactionManager;
 	  }
+	  
+	  
+//	  @Bean
+//	    public FilterRegistration registerCorsFilter(CORSFilter filter) {
+//		  FilterRegistration reg = new FilterRegistration();
+//		  reg.set
+//	        reg.setOrder(4);
+//	        return reg;
+//	    }
 
 
 }
