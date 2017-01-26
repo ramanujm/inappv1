@@ -1,6 +1,7 @@
 package com.duke.service;
 
 import java.io.Serializable;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import com.duke.db.HibernateDao;
+import com.duke.db.beans.Business;
 import com.duke.db.beans.BusinessUser;
 import com.duke.db.beans.CountryMaster;
 import com.duke.db.beans.Dao;
@@ -19,6 +21,7 @@ import com.duke.db.beans.Login;
 import com.duke.db.beans.UserDao;
 import com.duke.db.beans.UserRoles;
 import com.duke.db.beans.UserRolesId;
+import com.duke.presentation.beans.CustomerDetailVO;
 import com.duke.presentation.beans.DropDownItemVO;
 import com.duke.presentation.beans.PersonalInfoVO;
 import com.duke.presentation.beans.RegisterVO;
@@ -58,7 +61,7 @@ public class InvoiceService {
 		return personalInfo;
 	 }
 		
-		 public void editUser(String loginEmail , PersonalInfoVO personalInfo) throws UserNotFoundException, Exception {
+	 public void editUser(String loginEmail , PersonalInfoVO personalInfo) throws UserNotFoundException, Exception {
 			 Login existLogin =  hibenrateDao.getByField("email", loginEmail, Login.class);
 			 if (existLogin == null) {
 				 throw new UserNotFoundException(loginEmail);
@@ -102,6 +105,11 @@ public class InvoiceService {
 		 hibenrateDao.save(newLogin); //save login details..
 		 hibenrateDao.save(userRoles);//save roles
 		 
+		 Business business = new Business();
+		// hibenrateDao.get(CountryMaster.class, 1);
+		 //business.setCountryMaster(countryMaster);
+		 
+		 
 	 }
 	 
     public boolean login(String email,String password) throws UserNotFoundException , InvalidPasswordException , Exception{
@@ -131,6 +139,12 @@ public class InvoiceService {
     	     dropDownItems.add(item);	
     	}
     	return dropDownItems;
+    	
+    }
+    
+  public List<CustomerDetailVO> getMyCustomers(Principal principal) throws Exception {
+    	
+    	return null;
     	
     }
     

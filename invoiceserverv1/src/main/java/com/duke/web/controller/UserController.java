@@ -87,75 +87,48 @@ public class UserController {
                   
    	   return response;
    	}
-       
-
-	@RequestMapping(method = RequestMethod.POST,value="/login")
-	public @ResponseBody Response doAuthentication(String email, String password) {  
-    	Response response = new Response();
-
-      try{
-    	invoiceService.login(email,password);    
+   	
+   	
+    
+   	@RequestMapping(method = RequestMethod.GET,value="/myCustomers")
+   	public @ResponseBody Response myCustomers(Principal princial) {  
+       	Response response = new Response();
     	response.setResult(Response.SUCCESS);
         response.setCode("001");
-      }catch(UserNotFoundException e) {
-    	  e.printStackTrace();
-    	  response.setResult(Response.FAILED);
-          response.setCode("002"); //user already exists..
-          response.setDescription(e.getMessage());
-          
-      }catch(InvalidPasswordException e) {
-    	  response.setResult(Response.FAILED);
-          response.setCode("003"); //password not match....
-          response.setDescription(e.getMessage());
-      }
-      catch (Exception e) {
-    	  response.setResult(Response.FAILED);
-          response.setCode("004"); //unknow exceptional condtion...
-          response.setDescription(e.getMessage());
-      }
-               
-	   return response;
-	}
-    
-   	@RequestMapping(method = RequestMethod.GET,value="/allCountries")
-   	public @ResponseBody Response getAllCountries() {  
-       	Response response = new Response();
-
-         try{
-        	 List<DropDownItemVO> lists = invoiceService.getAllCountries();    
-       	    response.setResult(Response.SUCCESS);
-           response.setCode("001");
-           response.setResultData(lists);
-         }
-         catch (Exception e) {
-       	  response.setResult(Response.FAILED);
-             response.setCode("004"); //unknow exceptional condtion...
-             response.setDescription(e.getMessage());
-         }
+        
+        
+        
+//    
+       
                   
    	   return response;
    	}
-    
-    
-   	@RequestMapping(method = RequestMethod.GET,value="/allIndustries")
-   	public @ResponseBody Response getAllIndustries() {  
-       	Response response = new Response();
+   	
+   	
+       
 
-         try{
-        	 List<DropDownItemVO> lists = invoiceService.getAllIndustry();    
-       	    response.setResult(Response.SUCCESS);
-           response.setCode("001");
-           response.setResultData(lists);
-         }
-         catch (Exception e) {
-       	  response.setResult(Response.FAILED);
-             response.setCode("004"); //unknow exceptional condtion...
-             response.setDescription(e.getMessage());
-         }
-                  
-   	   return response;
-   	}
     
+//   	@RequestMapping(method = RequestMethod.GET,value="/allCountries")
+//   	public @ResponseBody Response getAllCountries() {  
+//       	Response response = new Response();
+//
+//         try{
+//        	 List<DropDownItemVO> lists = invoiceService.getAllCountries();    
+//       	    response.setResult(Response.SUCCESS);
+//           response.setCode("001");
+//           response.setResultData(lists);
+//         }
+//         catch (Exception e) {
+//       	  response.setResult(Response.FAILED);
+//             response.setCode("004"); //unknow exceptional condtion...
+//             response.setDescription(e.getMessage());
+//         }
+//                  
+//   	   return response;
+//   	}
+    
+    
+      
     
 //    @CrossOrigin(origins = "*")
 //    @PostMapping("/mycompany")    
