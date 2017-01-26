@@ -31,6 +31,11 @@ public class HibernateDao {
 	    public <T> T get(final Class<T> type, final Long id){
 	      return (T) getCurrentSession().get(type, id);
 	    }
+	    
+	    /***/
+	    public <T> T get(final Class<T> type, final Integer id){
+	      return (T) getCurrentSession().get(type, id);
+	    }
 
 	    /***/
 	    public <T> T merge(final T o)   {

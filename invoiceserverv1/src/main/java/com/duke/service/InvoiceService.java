@@ -101,13 +101,33 @@ public class InvoiceService {
 		 
 		 UserRoles userRoles = new UserRoles();
 		 userRoles.setId(roleId);
+		 
+		 Business business = new Business();
+         Integer countryId = registerVo.getCountry() == null ? 1 :  Integer.valueOf(registerVo.getCountry())		;
+         Integer industryId = registerVo.getIndustry() == null ? 1 : Integer.valueOf(registerVo.getIndustry());
+       
+		 CountryMaster countryMster =  hibenrateDao.get(CountryMaster.class, countryId);
+		 IndustryMaster indMaster =  hibenrateDao.get(IndustryMaster.class, industryId);
+		 
+		 business.setCountryMaster(countryMster);
+		 business.setIndustryMaster(indMaster);
+		 
+		 BusinessUser businessUser = new BusinessUser();
+		 newLogin.setBusinessUser(businessUser);
+		 
+		 businessUser.setBusiness(business);
+		 
+		 
+		 
 		 //save the login detail.
+		 hibenrateDao.save(businessUser); //save login details..
+		 hibenrateDao.save(business); //save login details..
+
 		 hibenrateDao.save(newLogin); //save login details..
 		 hibenrateDao.save(userRoles);//save roles
 		 
-		 Business business = new Business();
-		// hibenrateDao.get(CountryMaster.class, 1);
-		 //business.setCountryMaster(countryMaster);
+		 
+		 
 		 
 		 
 	 }
