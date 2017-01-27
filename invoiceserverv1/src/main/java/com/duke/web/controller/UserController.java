@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.duke.presentation.beans.CustomerDetailVO;
 import com.duke.presentation.beans.DropDownItemVO;
 import com.duke.presentation.beans.PersonalInfoVO;
 import com.duke.presentation.beans.RegisterVO;
@@ -91,96 +92,70 @@ public class UserController {
    	
     
    	@RequestMapping(method = RequestMethod.GET,value="/myCustomers")
-   	public @ResponseBody Response myCustomers(Principal princial) {  
-       	Response response = new Response();
-    	response.setResult(Response.SUCCESS);
-        response.setCode("001");
-        
-        
-        
-//    
-       
-                  
+   	public @ResponseBody Response myCustomers(Principal principal) {  
+   		Response response = new Response();
+
+        try{
+        List<CustomerDetailVO> customers= invoiceService.getMyCustomers(principal.getName());    
+      	response.setResult(Response.SUCCESS);
+          response.setCode("001");
+          response.setResultData(customers);
+        }catch(UserNotFoundException e) {
+      	  e.printStackTrace();
+      	  response.setResult(Response.FAILED);
+            response.setCode("002"); //Email is not exists.
+            response.setDescription(e.getMessage());
+        }catch (Exception e) {
+      	  response.setResult(Response.FAILED);
+            response.setCode("003"); //unknow exceptional condtion...
+            response.setDescription(e.getMessage());
+        }
    	   return response;
    	}
    	
    	
-       
+	@RequestMapping(method = RequestMethod.GET,value="/customerDetail")
+   	public @ResponseBody Response getCustomer(Principal principal, String customerEmail) {  
+   		Response response = new Response();
 
-    
-//   	@RequestMapping(method = RequestMethod.GET,value="/allCountries")
-//   	public @ResponseBody Response getAllCountries() {  
-//       	Response response = new Response();
-//
-//         try{
-//        	 List<DropDownItemVO> lists = invoiceService.getAllCountries();    
-//       	    response.setResult(Response.SUCCESS);
-//           response.setCode("001");
-//           response.setResultData(lists);
-//         }
-//         catch (Exception e) {
-//       	  response.setResult(Response.FAILED);
-//             response.setCode("004"); //unknow exceptional condtion...
-//             response.setDescription(e.getMessage());
-//         }
-//                  
-//   	   return response;
-//   	}
-    
-    
-      
-    
-//    @CrossOrigin(origins = "*")
-//    @PostMapping("/mycompany")    
-//	public @ResponseBody Response editCompanyDetail(@RequestBody CompanyDetailVO companyDetailRq) {    
-//        System.out.println("Inside the reponse....");   
-//    	Response response = new Response();
-//        	response.setResult("Success");
-//        	response.setCode("001");
-//       
-//	   return response;
-//	}
-//    
-//    @CrossOrigin(origins = "*")
-//    @PostMapping("/myaccount")    
-//	public @ResponseBody Response editAccountDetail(@RequestBody  PersonalInfoVO registerRq) {    
-//        System.out.println("Inside the reponse....");   
-//    	Response response = new Response();
-//        	response.setResult("Success");
-//        	response.setCode("001");
-//       
-//	   return response;
-//	}
-//    
-//    @CrossOrigin(origins = "*")
-//    @GetMapping("/mycompany")    
-//	public @ResponseBody CompanyDetailVO getCompanyDetail() {    
-//        System.out.println("Inside the reponse....");   
-//    	CompanyDetailVO companyDetail = new CompanyDetailVO();
-//    	companyDetail.setAddress("2928 tradewind dr");
-//    	companyDetail.setTaxNo("98178676");
-//    	companyDetail.setCity("Toronto");
-//    	companyDetail.setPhone("6477091839");
-//    	companyDetail.setProvince("ON");
-//    	try{
-//    	invoiceService.prepareInvoice(null);
-//    	}catch(Exception e){
-//    		
-//    	}
-//    	return companyDetail;
-//	}
-//    
-//    @CrossOrigin(origins = "*")
-//    @GetMapping("/myaccount")    
-//	public @ResponseBody PersonalInfoVO getAccountDetail() {    
-//        System.out.println("Inside the reponse....");   
-//        PersonalInfoVO personalInfo = new PersonalInfoVO();
-//        personalInfo.setFname("Parthiv");
-//        personalInfo.setLname("Patel");
-//        personalInfo.setLoginEmail("Contact2Parthiv@gmail.com");
-//        personalInfo.setRegion("Canada");
-//       return personalInfo;
-//	}
+        try{
+        CustomerDetailVO cusotmer= invoiceService.getCustomerDetail(principal.getName(), customerEmail);    
+      	response.setResult(Response.SUCCESS);
+          response.setCode("001");
+          response.setResultData(cusotmer);
+        }catch(UserNotFoundException e) {
+      	  e.printStackTrace();
+      	  response.setResult(Response.FAILED);
+            response.setCode("002"); //Email is not exists.
+            response.setDescription(e.getMessage());
+        }catch (Exception e) {
+      	  response.setResult(Response.FAILED);
+            response.setCode("003"); //unknow exceptional condtion...
+            response.setDescription(e.getMessage());
+        }
+   	   return response;
+   	}
 	
-		
+	
+	@RequestMapping(method = RequestMethod.POST,value="/customerDetail")
+   	public @ResponseBody Response getCustomer(Principal principal, @RequestBody CustomerDetailVO customerdetail) {  
+   		Response response = new Response();
+
+        try{
+          invoiceService.updateCustomerDetail(principal.getName(), customerdetail);    
+      	  response.setResult(Response.SUCCESS);
+          response.setCode("001");
+          //response.setResultData(cusotmer);
+        }catch(UserNotFoundException e) {
+      	  e.printStackTrace();
+      	  response.setResult(Response.FAILED);
+           response.setCode("002"); //Email is not exists.
+           response.setDescription(e.getMessage());
+        }catch (Exception e) {
+      	  response.setResult(Response.FAILED);
+            response.setCode("003"); //unknow exceptional condtion...
+            response.setDescription(e.getMessage());
+        }
+   	   return response;
+   	}	
 }

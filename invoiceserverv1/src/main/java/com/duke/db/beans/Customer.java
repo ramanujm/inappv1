@@ -66,7 +66,7 @@ public class Customer implements java.io.Serializable {
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "AddressID", nullable = false)
+	@JoinColumn(name = "AddressID", nullable = false , insertable = true, updatable = true)
 	public Address getAddress() {
 		return this.address;
 	}
@@ -76,7 +76,7 @@ public class Customer implements java.io.Serializable {
 	}
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "SUBSCRIPTIONID", nullable = false)
+	@JoinColumn(name = "SUBSCRIPTIONID", nullable = false,updatable = true, insertable = true)
 	public Subscription getSubscription() {
 		return this.subscription;
 	}
@@ -140,6 +140,27 @@ public class Customer implements java.io.Serializable {
 
 	public void setInvoices(Set<Invoice> invoices) {
 		this.invoices = invoices;
+	}
+	
+	@Override
+	public boolean equals(Object otherCustomer) {
+		// TODO Auto-generated method stub
+		if (otherCustomer instanceof Customer) {
+			if (((Customer) otherCustomer).getId() == this.getId()) {
+				return true;
+			}
+			
+			String email1 = this.getEmail();
+			String email2 = ((Customer) otherCustomer).getEmail();
+			
+			if (email1 != null && email2 != null && (email1.equals(email2))) {
+				return true;
+			}
+			
+			
+			
+		}		
+		return false;
 	}
 
 }

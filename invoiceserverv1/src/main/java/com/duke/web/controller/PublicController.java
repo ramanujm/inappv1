@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.duke.presentation.beans.DropDownItemVO;
 import com.duke.presentation.beans.RegisterVO;
 import com.duke.presentation.beans.Response;
+import com.duke.service.DataService;
 import com.duke.service.InvoiceService;
 import com.duke.service.exception.EmailAlreadyExistsException;
 import com.duke.service.exception.InvalidPasswordException;
@@ -33,6 +34,9 @@ public class PublicController {
 
 	@Autowired
 	InvoiceService invoiceService;	
+	
+	@Autowired
+	DataService dataService;
 	
 	@RequestMapping(method = RequestMethod.POST,value="/register")
 	public @ResponseBody Response doRegister(@RequestBody RegisterVO registerRq) {  
@@ -58,40 +62,12 @@ public class PublicController {
 	}
     
 
-	@RequestMapping(method = RequestMethod.POST,value="/login")
-	public @ResponseBody Response doAuthentication(String email, String password) {  
-    	Response response = new Response();
-
-      try{
-    	invoiceService.login(email,password);    
-    	response.setResult(Response.SUCCESS);
-        response.setCode("001");
-      }catch(UserNotFoundException e) {
-    	  e.printStackTrace();
-    	  response.setResult(Response.FAILED);
-          response.setCode("002"); //user already exists..
-          response.setDescription(e.getMessage());
-          
-      }catch(InvalidPasswordException e) {
-    	  response.setResult(Response.FAILED);
-          response.setCode("003"); //password not match....
-          response.setDescription(e.getMessage());
-      }
-      catch (Exception e) {
-    	  response.setResult(Response.FAILED);
-          response.setCode("004"); //unknow exceptional condtion...
-          response.setDescription(e.getMessage());
-      }
-               
-	   return response;
-	}
-    
-   	@RequestMapping(method = RequestMethod.GET,value="/allCountries")
+	   	@RequestMapping(method = RequestMethod.GET,value="/allCountries")
    	public @ResponseBody Response getAllCountries() {  
        	Response response = new Response();
 
          try{
-        	 List<DropDownItemVO> lists = invoiceService.getAllCountries();    
+        	 List<DropDownItemVO> lists = dataService.getAllCountries();    
        	    response.setResult(Response.SUCCESS);
            response.setCode("001");
            response.setResultData(lists);
@@ -111,7 +87,7 @@ public class PublicController {
        	Response response = new Response();
 
          try{
-        	 List<DropDownItemVO> lists = invoiceService.getAllIndustry();    
+        	 List<DropDownItemVO> lists = dataService.getAllIndustry();    
        	    response.setResult(Response.SUCCESS);
            response.setCode("001");
            response.setResultData(lists);

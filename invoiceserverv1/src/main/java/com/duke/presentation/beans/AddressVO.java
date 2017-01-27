@@ -6,6 +6,7 @@ public class AddressVO {
    private String city;
    private String state;
    private String zip;
+   private String id;
 public String getAddress1() {
 	return address1;
 }
@@ -35,6 +36,12 @@ public String getZip() {
 }
 public void setZip(String zip) {
 	this.zip = zip;
+}
+public String getId() {
+	return id;
+}
+public void setId(String id) {
+	this.id = id;
 }
    
    

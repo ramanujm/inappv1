@@ -69,6 +69,8 @@ public class CustomerDetailVO {
 	public void setAddressVO(AddressVO addressVO) {
 		this.addressVO = addressVO;
 	}
+
+
 	
 	
 	

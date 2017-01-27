@@ -3,48 +3,47 @@ package com.duke.service;
 import java.io.Serializable;
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.transaction.Transactional;
 
+import org.hamcrest.CustomTypeSafeMatcher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import com.duke.db.HibernateDao;
+import com.duke.db.beans.Address;
 import com.duke.db.beans.Business;
 import com.duke.db.beans.BusinessUser;
 import com.duke.db.beans.CountryMaster;
+import com.duke.db.beans.Customer;
 import com.duke.db.beans.Dao;
 import com.duke.db.beans.IndustryMaster;
 import com.duke.db.beans.Login;
+import com.duke.db.beans.Subscription;
 import com.duke.db.beans.UserDao;
 import com.duke.db.beans.UserRoles;
 import com.duke.db.beans.UserRolesId;
+import com.duke.presentation.beans.AddressVO;
 import com.duke.presentation.beans.CustomerDetailVO;
 import com.duke.presentation.beans.DropDownItemVO;
 import com.duke.presentation.beans.PersonalInfoVO;
 import com.duke.presentation.beans.RegisterVO;
 import com.duke.security.oauth.Constants;
+import com.duke.service.exception.CustomerNotFound;
 import com.duke.service.exception.EmailAlreadyExistsException;
 import com.duke.service.exception.InvalidPasswordException;
 import com.duke.service.exception.UserNotFoundException;
 
 @Transactional
 @Repository
-public class InvoiceService {
+public class InvoiceService extends BaseService {
 
-//	 @Autowired
-//	  private Dao dao;
-	 //@Autowired
-	// private UserDao userDao;
-	 
-	 @Autowired
-	 private HibernateDao hibenrateDao;
-	 
-	 
 	 public PersonalInfoVO getUserDetail(String email) throws UserNotFoundException, Exception {
-		 Login existLogin =  hibenrateDao.getByField("email", email, Login.class);
+		 Login existLogin =  getHibenrateDao().getByField("email", email, Login.class);
 		 if (existLogin == null) {
 			 throw new UserNotFoundException(email);
 		 }
@@ -62,7 +61,7 @@ public class InvoiceService {
 	 }
 		
 	 public void editUser(String loginEmail , PersonalInfoVO personalInfo) throws UserNotFoundException, Exception {
-			 Login existLogin =  hibenrateDao.getByField("email", loginEmail, Login.class);
+			 Login existLogin =  getHibenrateDao().getByField("email", loginEmail, Login.class);
 			 if (existLogin == null) {
 				 throw new UserNotFoundException(loginEmail);
 			 }
@@ -76,8 +75,8 @@ public class InvoiceService {
 			businessUser.setFirstName(personalInfo.getFname());
 			businessUser.setLastName(personalInfo.getLname());
 			
-			hibenrateDao.saveOrUpdate(businessUser);
-			hibenrateDao.saveOrUpdate(existLogin);
+			getHibenrateDao().saveOrUpdate(businessUser);
+			getHibenrateDao().saveOrUpdate(existLogin);
 			
 			
 	 }
@@ -85,7 +84,7 @@ public class InvoiceService {
 	 
 	 public void registerUser(RegisterVO registerVo) throws EmailAlreadyExistsException , Exception{
 		 
-		 Login existLogin =  hibenrateDao.getByField("email", registerVo.getEmail(), Login.class);
+		 Login existLogin =  getHibenrateDao().getByField("email", registerVo.getEmail(), Login.class);
 		 if (existLogin != null) {
 			 throw new EmailAlreadyExistsException(registerVo.getEmail());
 		 }
@@ -106,8 +105,8 @@ public class InvoiceService {
          Integer countryId = registerVo.getCountry() == null ? 1 :  Integer.valueOf(registerVo.getCountry())		;
          Integer industryId = registerVo.getIndustry() == null ? 1 : Integer.valueOf(registerVo.getIndustry());
        
-		 CountryMaster countryMster =  hibenrateDao.get(CountryMaster.class, countryId);
-		 IndustryMaster indMaster =  hibenrateDao.get(IndustryMaster.class, industryId);
+		 CountryMaster countryMster =  getHibenrateDao().get(CountryMaster.class, countryId);
+		 IndustryMaster indMaster =  getHibenrateDao().get(IndustryMaster.class, industryId);
 		 
 		 business.setCountryMaster(countryMster);
 		 business.setIndustryMaster(indMaster);
@@ -117,72 +116,130 @@ public class InvoiceService {
 		 
 		 businessUser.setBusiness(business);
 		 
+		 if ( business.getSubscription() == null ) {
+			 Subscription sub = new Subscription();
+			 sub.setJoinDate(new Date());
+			 business.setSubscription(sub);
+		 }
 		 
-		 
-		 //save the login detail.
-		 hibenrateDao.save(businessUser); //save login details..
-		 hibenrateDao.save(business); //save login details..
+		 getHibenrateDao().save(business.getSubscription()); //save login details..
 
-		 hibenrateDao.save(newLogin); //save login details..
-		 hibenrateDao.save(userRoles);//save roles
-		 
-		 
-		 
-		 
+		 //save the login detail.
+		 getHibenrateDao().save(businessUser); //save login details..
+		 getHibenrateDao().save(business); //save login details..
+
+		 getHibenrateDao().save(newLogin); //save login details..
+		 getHibenrateDao().save(userRoles);//save roles
 		 
 	 }
 	 
-    public boolean login(String email,String password) throws UserNotFoundException , InvalidPasswordException , Exception{
-		 
-		 Login existLogin =  hibenrateDao.getByField("email", email, Login.class);
-		 if (existLogin == null) {
-			 throw new UserNotFoundException(email);
-		 }
-		 
-		 if (!existLogin.getPassword().equals(password)) {
-			 throw new InvalidPasswordException(email);
-		 }
-		 
-		 return true;
-	 }
-    
-    public List<DropDownItemVO> getAllCountries() throws Exception {
-    	
-    	List<CountryMaster> countries = hibenrateDao.getAll(CountryMaster.class);
-    	
-    	if (countries.isEmpty()) return null;
-    	List<DropDownItemVO> dropDownItems = new ArrayList();
-    	for (CountryMaster country : countries) {
-    		DropDownItemVO item = new DropDownItemVO();
-    		item.setId(String.valueOf(country.getId()));
-    		item.setValue(country.getName());
-    	     dropDownItems.add(item);	
-    	}
-    	return dropDownItems;
-    	
-    }
-    
-  public List<CustomerDetailVO> getMyCustomers(Principal principal) throws Exception {
-    	
-    	return null;
-    	
-    }
-    
- public List<DropDownItemVO> getAllIndustry() throws Exception {
-    	
-    	List<IndustryMaster> induistries = hibenrateDao.getAll(IndustryMaster.class);
-    	
-    	if (induistries.isEmpty()) return null;
-    	List<DropDownItemVO> dropDownItems = new ArrayList();
-    	for (IndustryMaster industry : induistries) {
-    		DropDownItemVO item = new DropDownItemVO();
-    		item.setId(String.valueOf(industry.getId()));
-    		item.setValue(industry.getDescription());
-    	     dropDownItems.add(item);	
-    	}
-    	return dropDownItems;
-    	
-    }
    
+    
+   
+    
+  public void updateCustomerDetail(String loginEmail, CustomerDetailVO customerDetail) throws UserNotFoundException, Exception {
+	 
+	 Customer customer = null; 
+	  Login existLogin =  getHibenrateDao().getByField("email", loginEmail, Login.class);
+	 if (existLogin == null) {
+		 throw new UserNotFoundException(loginEmail);
+	 }
+	 
+	 
+	 if (customerDetail.getEmail() != null ) {
+			 customer =getHibenrateDao().getByField("email", customerDetail.getEmail() , Customer.class);
+	 }
+	 
+	 if (customer == null) {
+		 customer = new Customer(); // looks like new customer..
+	 }
+	 
+	 customer.setEmail(customerDetail.getEmail());
+	 customer.setFirstName(customerDetail.getfName());
+	 customer.setLastName(customerDetail.getlName());
+	 customer.setPhone(customerDetail.getPhone());
+	 if ( customer.getSubscription() == null ) {
+		 Subscription sub = new Subscription();
+		 sub.setJoinDate(new Date());
+		 customer.setSubscription(sub);
+	 }
+     
+	 Address address = customer.getAddress() == null ? new Address() : customer.getAddress();
+	 
+	 if (customerDetail.getAddressVO() != null) {
+		 AddressVO addressVO = customerDetail.getAddressVO();
+		 address.setAddress1(addressVO.getAddress1());
+		 address.setAddress2(addressVO.getAddress2());
+		 address.setCity(addressVO.getCity());
+		 address.setState(addressVO.getState());
+		 address.setZip(addressVO.getZip());
+		 customer.setAddress(address); //set the address..
+	 }
+	 
+	 existLogin.getBusinessUser().getBusiness().getCustomers().add(customer);
+	 
+	  getHibenrateDao().saveOrUpdate(customer.getSubscription());//save existing customer.
+	  
+	 getHibenrateDao().saveOrUpdate(customer.getAddress());//save existing customer.
+	 getHibenrateDao().saveOrUpdate(existLogin.getBusinessUser().getBusiness());//save existing customer.
+	 getHibenrateDao().saveOrUpdate(customer);//save existing customer.
+
+
+	 
+  }
+    
+  
+  public CustomerDetailVO getCustomerDetail(String loginEmail, String customerEmail) throws UserNotFoundException, CustomerNotFound, Exception {
+		 
+	  Customer customer = null; 
+	  Login existLogin =  getHibenrateDao().getByField("email", loginEmail, Login.class);
+	 if (existLogin == null) {
+		 throw new UserNotFoundException(loginEmail);
+	 }
+	 
+	 if ( customerEmail == null) {
+	    throw new CustomerNotFound(customerEmail);
+	 }
+	 
+	 
+	 if ( customerEmail != null ) {
+		 //get the customer by id..
+		try{
+		 customer =getHibenrateDao().getByField("email", customerEmail, Customer.class);
+		 if (customer == null) {
+			    throw new CustomerNotFound(customerEmail);		 
+		 }
+		}catch(NumberFormatException e){
+			     throw new CustomerNotFound(customerEmail);
+
+		 }
+	 }
+	 return ServiceHelper.getCustomerDetailVO(customer);	 
+  }
+    
+  
+  public List<CustomerDetailVO> getMyCustomers(String loginEmail) throws UserNotFoundException, Exception {
+	  
+	  Login existLogin =  getHibenrateDao().getByField("email", loginEmail, Login.class);
+		 if (existLogin == null) {
+			 throw new UserNotFoundException(loginEmail);
+		 }
+	  
+		 List<CustomerDetailVO> cusotmersVo= new ArrayList();
+		 Iterator<Customer> customers = existLogin.getBusinessUser().getBusiness().getCustomers().iterator();
+		 
+		 while(customers.hasNext()) {
+			 Customer customer = customers.next();
+			 cusotmersVo.add(ServiceHelper.getCustomerDetailVO(customer));
+
+		 }
+		 
+		
+		 return cusotmersVo;
+	  
+    	
+    }
+    
+
     
 }
